@@ -33,11 +33,11 @@
             border-radius: 4px;
         }
 
-          /* Use the Inter font for a modern feel */
+      /* Use the Inter font for a modern feel */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-     .sidebar {
-             background-color: #21212c;
+        .sidebar {
+            background-color: #21212c;
             width: 280px;
             padding: 1.5rem;
             min-height: 100vh;
@@ -50,26 +50,91 @@
             top: 0;
             left: 0;
         }
+
         .active {
-  background-color: white;
-  color: #1e40af; /* Tailwind's blue-800 */
-  font-weight: 600;
-  
-}
+            background-color: white;
+            color: #1e40af;
+            /* Tailwind's blue-800 */
+            font-weight: 600;
+
+        }
+
+        .sidebar a,
+        .sidebar summary,
+        .sidebar h2,
+        .sidebar .text-white {
+            color: white;
+        }
+
+        /* Close button inside sidebar (visible when overlayed in small view) */
+        .sidebar .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar.open .close-btn {
+            display: block;
+        }
+
+        /* Toggle (hamburger) button for tablet/phone */
+        .sidebar-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 60;
+            display: none;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.65rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.15);
+        }
 
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
             }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* show toggle on tablet/phone */
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar.open {
+                /* ensure it overlays content */
+                box-shadow: 0 6px 30px rgba(2, 6, 23, 0.35);
+                width: 78%;
+            }
+
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
             .sidebar.open {
                 transform: translateX(0);
             }
         }
-        @media (min-width: 1025px) {
-            .sidebar {
-                transform: translateX(0);
-            }
-        }
+
 
         /* Styling for main content area to clear the sidebar */
         .main-content {
@@ -314,9 +379,10 @@
 </head>
 
 <body class="flex flex-col md:flex-row">
-       
+       <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
         <!-- Sidebar -->
         <aside id="sidebar" class="sidebar">
+             <button id="sidebarClose" class="close-btn" aria-label="Close sidebar">✕</button>
             <div class="flex items-center mb-10">
                 <img src="https://placehold.co/40x40/5c6ac4/fff?text=R" alt="Logo" class="rounded-full mr-3">
                 <h2 class="text-lg font-bold text-white">ReliableDrs.</h2>
@@ -1536,6 +1602,56 @@ Dinner: Pasta with vegetables.</textarea>
                     growthChart.update();
                 });
             });
+            
+           const setSidebarOpen = (open) => {
+                if (open) {
+                    sidebar.classList.add('open');
+                    if (sidebarToggle) sidebarToggle.style.display = 'none'; // hide hamburger when sidebar open
+                } else {
+                    sidebar.classList.remove('open');
+                    if (sidebarToggle) sidebarToggle.style.display = ''; // show hamburger when sidebar closed
+                }
+            };
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    setSidebarOpen(true);
+                });
+            }
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', () => {
+                    setSidebarOpen(false);
+                });
+            }
+
+            // Close sidebar when clicking a nav link on small screens (improves UX)
+            sidebar.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (window.innerWidth <= 1024) setSidebarOpen(false);
+                });
+            });
+
+            // Keep toggle visibility in sync on resize
+            const syncToggleOnResize = () => {
+                if (!sidebarToggle) return;
+                if (window.innerWidth > 1024) {
+                    // On large screens hide the hamburger and ensure sidebar is visible normally
+                   sidebarToggle.style.display = 'none';
+                    sidebar.classList.remove('open');
+              } else {
+                    // On small screens show hamburger if sidebar is closed
+                    if (!sidebar.classList.contains('open')) {
+                        sidebarToggle.style.display = '';
+                    } else {
+                        sidebarToggle.style.display = 'none';
+                    }
+                }
+            };
+            window.addEventListener('resize', syncToggleOnResize);
+            // initial sync
+            syncToggleOnResize();
+
+
         });
     </script>
 </body>
