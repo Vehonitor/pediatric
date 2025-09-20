@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Checkin Detail</title>
+    <!-- Tailwind CSS CDN for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font family for a clean look -->
+    <style>
+        /* Use the Inter font for a modern feel */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Light gray background for the main content */
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: #6366f1;
+            border-radius: 4px;
+        }
+
+       
+          /* Use the Inter font for a modern feel */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+     .sidebar {
+             background-color: #21212c;
+            width: 280px;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #061fff;
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 50;
+            top: 0;
+            left: 0;
+        }
+        .active {
+  background-color: white;
+  color: #1e40af; /* Tailwind's blue-800 */
+  font-weight: 600;
+  
+}
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        @media (min-width: 1025px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+
+
+        /* Styling for main content area to clear the sidebar */
+        .main-content {
+            margin-left: 250px;
+            /* Offset for the fixed sidebar */
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+          
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Custom styles for form elements to match the image design */
+        .form-section {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-header {
+            background-color: #2563eb;
+            /* Blue header from the image */
+            color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-weight: 600;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background-color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+
+        .health-card {
+            background-color: #eff6ff;
+            /* Light blue card background */
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #dbeafe;
+            /* Lighter blue border */
+        }
+
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .form-table th,
+        .form-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-table th {
+            font-weight: 600;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .form-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .form-table tr:hover {
+            background-color: #e5e7eb;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #d1d5db;
+            width: 100%;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .static-info-label {
+            font-size: 0.75rem;
+            /* text-xs */
+            font-weight: 500;
+            color: #6b7280;
+            /* Gray-500 */
+        }
+
+        .static-info-value {
+            font-size: 0.875rem;
+            /* text-sm */
+            font-weight: 600;
+            color: #1f2937;
+            /* Gray-900 */
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon input {
+            padding-right: 2.5rem;
+            /* Space for the icon */
+        }
+
+        .input-with-icon .icon {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            color: #6b7280;
+            pointer-events: none;
+        }
+
+        .remove-icon {
+            color: #ef4444;
+            /* Red color for remove icon */
+            cursor: pointer;
+        }
+
+        .add-button {
+            background-color: #22c55e;
+            /* Green for add button */
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .add-button:hover {
+            background-color: #16a34a;
+        }
+
+        .icon-button {
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: #1e40af;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            /* full rounded */
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-ordered {
+            background-color: #fcd34d;
+            /* Yellow */
+            color: #92400e;
+        }
+
+        .status-pending {
+            background-color: #e5e7eb;
+            /* Gray */
+            color: #4b5563;
+        }
+
+        .status-completed {
+            background-color: #a7f3d0;
+            /* Green */
+            color: #065f46;
+        }
+
+        /* Styling for the new top navigation bar */
+        .top-nav {
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+        }
+
+        .top-nav-button {
+            background-color: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .top-nav-button:hover {
+            background-color: #1e40af;
+        }
+
+        .nested-section-header {
+            font-weight: 600;
+            color: #1f2937;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            /* text-lg */
+        }
+         
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex antialiased text-gray-800">
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center mb-10">
+                <img src="https://placehold.co/40x40/5c6ac4/fff?text=R" alt="Logo" class="rounded-full mr-3">
+                <h2 class="text-lg font-bold text-white">ReliableDrs.</h2>
+            </div>
+            
+
+            <nav>
+                <ul>
+                  
+             <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-tachometer-alt mr-4 text-lg"></i>
+                           Admin dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-user-md mr-4 text-lg"></i>
+                            Doctor dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <details open>
+                            <summary class="flex items-center text-blue-300 hover:bg-blue-100 bg-blue-50 text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Appointments
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="consulation.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Attend</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Requests</a></li>
+                                <li><a href="scheduled.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Schedule</a></li>
+                                <li><a href="checkin.html" class="block text-blue hover:text-blue-800 p-2 rounded-lg active">Checkin</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Checkout</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-notes-medical mr-4 text-lg"></i>
+                                Adhoc Appointment
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details >
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Pediatric
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="profile.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Profiles</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">update medical records</a></li>
+                               
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-file-prescription mr-4 text-lg"></i>
+                                Prescription Templates
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-cog mr-4 text-lg"></i>
+                                Services
+                            </summary>
+                        </details>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto pt-6 text-sm text-gray-400">
+                2025 ©ReliableDrs Inc. All Rights Reserved.
+            </div>
+        </aside>
+
+    <!-- Main Content Area -->
+    <main class="md:ml-64 flex-1 p-6 lg:p-10">
+        <!-- Header Section -->
+        <div class="flex items-center justify-between bg-blue-600 p-6 rounded-xl shadow-md mb-6">
+            <h1 class="text-2xl font-bold text-white">Checkin Detail</h1>
+        </div>
+
+        <!-- Patient Profile Section - Remains outside the tabs -->
+        <div class="bg-white rounded-xl shadow-md mb-6 overflow-hidden">
+            <div class="bg-blue-600 p-4">
+                <h2 class="text-xl font-semibold text-white">Patient Profile</h2>
+            </div>
+            <div class="p-6 lg:p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-center">
+                    <!-- Profile Image -->
+                    <div class="flex justify-center md:justify-start">
+                        <img src="https://placehold.co/100x100/A0AEC0/FFFFFF?text=P" alt="Patient Profile" class="rounded-full h-24 w-24 object-cover">
+                    </div>
+                    <!-- Profile Details -->
+                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Name</label>
+                            <div class="mt-1 text-gray-900 font-medium">John Doe</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date of Birth (Age)</label>
+                            <div class="mt-1 text-gray-900 font-medium">1990-01-01 (34)</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Gender</label>
+                            <div class="mt-1 text-gray-900 font-medium">Male</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Parent/Guardian Name</label>
+                            <div class="mt-1 text-gray-900 font-medium">Jane Doe</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <div class="mt-1 text-gray-900 font-medium">johndoe@example.com</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Contact Number</label>
+                            <div class="mt-1 text-gray-900 font-medium">555-555-5555</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">City</label>
+                            <div class="mt-1 text-gray-900 font-medium">New York</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Patient Since</label>
+                            <div class="mt-1 text-gray-900 font-medium">2020-05-15</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Allergies</label>
+                            <div class="mt-1 text-gray-900 font-medium">Pollen, Peanuts</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Consultation Date</label>
+                            <div class="mt-1 text-gray-900 font-medium">2023-04-20</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Last Follow-up Request On</label>
+                            <div class="mt-1 text-gray-900 font-medium">2023-04-27</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md mb-6 overflow-hidden">
+            <div class="bg-blue-600 p-4">
+                <h2 class="text-xl font-semibold text-white">Reason for visit</h2>
+            </div>
+            <div class="p-6 lg:p-8 space-y-6">
+                  <!-- Reason for Visit Section -->
+                    <div class="mb-6">
+                        <textarea id="reason" name="reason" rows="4" placeholder="Enter the patient's reason for visit here..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+
+            </div>
+        </div>
+
+
+
+
+<div class="bg-white rounded-xl shadow-md mb-6 overflow-hidden">
+            <div class="bg-blue-600 p-4">
+                <h2 class="text-xl font-semibold text-white">Patients Records</h2>
+            </div>
+<div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <!-- Tabs Header -->
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-4 px-4 lg:px-6" aria-label="Tabs">
+                    <button
+                        class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none transition-colors duration-200"
+                        data-tab-target="checkin-details">
+                        Checkin Details
+                    </button>
+                    <button
+                        class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none transition-colors duration-200"
+                        data-tab-target="baby-growth">
+                        Baby Growth
+                    </button>
+                    <button
+                        class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center font-medium text-sm border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none transition-colors duration-200"
+                        data-tab-target="lab-info">
+                        Lab Info
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6 lg:p-8 space-y-6">
+                <!-- Checkin Details Tab Content -->
+                
+
+                <!-- Baby Growth Records Tab Content -->
+                <div id="baby-growth" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Baby Growth Records</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-sm font-medium text-gray-600 uppercase bg-gray-50">
+                                    <th class="py-3 px-4 border-b">Date</th>
+                                    <th class="py-3 px-4 border-b">Height (cm)</th>
+                                    <th class="py-3 px-4 border-b">Weight (kg)</th>
+                                    <th class="py-3 px-4 border-b">Head Circumference (cm)</th>
+                                    <th class="py-3 px-4 border-b">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="py-4 px-4 border-b">2023-01-01</td>
+                                    <td class="py-4 px-4 border-b">48</td>
+                                    <td class="py-4 px-4 border-b">3.2</td>
+                                    <td class="py-4 px-4 border-b">33</td>
+                                    <td class="py-4 px-4 border-b">
+                                        <button class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+                                    </td>
+                                </tr>
+                                <!-- New Row for adding a record -->
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="py-4 px-4 border-b">
+                                        <input type="date" class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    </td>
+                                    <td class="py-4 px-4 border-b">
+                                        <input type="text" placeholder="e.g., 50" class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    </td>
+                                    <td class="py-4 px-4 border-b">
+                                        <input type="text" placeholder="e.g., 3.5" class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    </td>
+                                    <td class="py-4 px-4 border-b">
+                                        <input type="text" placeholder="e.g., 35" class="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                    </td>
+                                    <td class="py-4 px-4 border-b">
+                                        <button class="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md text-sm transition-colors">Add</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="checkin-details" class="tab-content">
+                  
+                    <!-- Patient Health Statistics Section -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Patient Health Statistics</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Health Stats Fields -->
+                              <div>
+                                <label for="temperature" class="block text-sm font-medium text-gray-700">Temperature (°C)</label>
+                                <input type="text" id="temperature" name="temperature" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                            <div>
+                                <label for="pulse-rate" class="block text-sm font-medium text-gray-700">Heart rate</label>
+                                <input type="text" id="pulse-rate" name="pulse-rate" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                             <div>
+                                <label for="respiratory-rate" class="block text-sm font-medium text-gray-700">Respiratory Rate (breaths/min)</label>
+                                <input type="text" id="respiratory-rate" name="respiratory-rate" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                              <div class="col-span-1 md:col-span-2">
+                                <label for="bp" class="block text-sm font-medium text-gray-700">BP-Systolic/Diastolic (mmHg)</label>
+                                <input type="text" id="bp" name="bp" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                            <div>
+                                <label for="triglycerides" class="block text-sm font-medium text-gray-700">pain score</label>
+                                <input type="text" id="triglycerides" name="triglycerides" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                            
+                          
+                        </div>
+                    </div>
+                </div>
+                <!-- Lab Info Tab Content -->
+                <div id="lab-info" class="tab-content hidden">
+                    <!-- Prescribed Lab Requests Section -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Prescribed Lab Requests</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-sm font-medium text-gray-600 uppercase bg-gray-50">
+                                        <th class="py-3 px-4 border-b">Date</th>
+                                        <th class="py-3 px-4 border-b">Name of Test</th>
+                                        <th class="py-3 px-4 border-b">Description</th>
+                                        <th class="py-3 px-4 border-b">Status</th>
+                                        <th class="py-3 px-4 border-b">Delivery</th>
+                                        <th class="py-3 px-4 border-b attachment-header">Attachment</th>
+                                        <th class="py-3 px-4 border-b action-header">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sample Row 1 -->
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-4 border-b">04/27/2023</td>
+                                        <td class="py-4 px-4 border-b">Thyroid Panel</td>
+                                        <td class="py-4 px-4 border-b">Check thyroid function.</td>
+                                        <td class="py-4 px-4 border-b text-yellow-600 font-medium">Pending</td>
+                                        <td class="py-4 px-4 border-b">
+                                            <div class="flex items-center space-x-4">
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" data-delivery-type="hard-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Hard Copy</span>
+                                                </label>
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" checked data-delivery-type="soft-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Soft Copy</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4 border-b attachment-cell">No attachment</td>
+                                        <td class="py-4 px-4 border-b action-cell">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10 16H6a2 2 0 0 0-2 2v4"></path><path d="M7 16v4"></path></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Sample Row 2 -->
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-4 border-b">03/15/2023</td>
+                                        <td class="py-4 px-4 border-b">Pulmonary Test</td>
+                                        <td class="py-4 px-4 border-b">Assessment of lung capacity.</td>
+                                        <td class="py-4 px-4 border-b text-green-600 font-medium">Reviewed</td>
+                                        <td class="py-4 px-4 border-b">
+                                            <div class="flex items-center space-x-4">
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" checked data-delivery-type="hard-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Hard Copy</span>
+                                                </label>
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" data-delivery-type="soft-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Soft Copy</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4 border-b attachment-cell">File_2023.pdf</td>
+                                        <td class="py-4 px-4 border-b action-cell">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10 16H6a2 2 0 0 0-2 2v4"></path><path d="M7 16v4"></path></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Sample Row 3 -->
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-4 border-b">02/20/2023</td>
+                                        <td class="py-4 px-4 border-b">CBC</td>
+                                        <td class="py-4 px-4 border-b">Complete Blood Count.</td>
+                                        <td class="py-4 px-4 border-b text-green-600 font-medium">Reviewed</td>
+                                        <td class="py-4 px-4 border-b">
+                                            <div class="flex items-center space-x-4">
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" data-delivery-type="hard-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Hard Copy</span>
+                                                </label>
+                                                <label class="flex items-center space-x-1 text-gray-700">
+                                                    <input type="checkbox" checked data-delivery-type="soft-copy" class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Soft Copy</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4 border-b attachment-cell">File_2023.pdf</td>
+                                        <td class="py-4 px-4 border-b action-cell">
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10 16H6a2 2 0 0 0-2 2v4"></path><path d="M7 16v4"></path></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+            </div>
+
+
+        
+
+        <!-- Action Buttons -->
+        <div class="flex justify-start space-x-4 pt-6 border-t mt-8">
+            <button class="px-6 py-2 rounded-lg text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors">
+                Back
+            </button>
+            <button class="px-6 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                Checkin
+            </button>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabsContainer = document.querySelector('.border-b nav');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Set initial active tab
+            const initialActiveTab = document.querySelector('button[data-tab-target="checkin-details"]');
+            const initialActiveContent = document.getElementById('checkin-details');
+            initialActiveTab.classList.add('border-blue-600', 'text-blue-600');
+            initialActiveContent.classList.remove('hidden');
+
+            tabsContainer.addEventListener('click', (event) => {
+                const clickedButton = event.target.closest('.tab-btn');
+                if (!clickedButton) return;
+
+                const targetTab = clickedButton.dataset.tabTarget;
+
+                // Deactivate all tabs and hide all content
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('border-blue-600', 'text-blue-600');
+                    btn.classList.add('border-transparent', 'text-gray-500');
+                });
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                // Activate the clicked tab and show its content
+                clickedButton.classList.add('border-blue-600', 'text-blue-600');
+                clickedButton.classList.remove('border-transparent', 'text-gray-500');
+                document.getElementById(targetTab).classList.remove('hidden');
+            });
+
+            // Hard Copy Checkbox functionality
+            const hardCopyCheckboxes = document.querySelectorAll('input[data-delivery-type="hard-copy"]');
+            hardCopyCheckboxes.forEach(checkbox => {
+                // Initial check on page load to hide elements if the checkbox is already checked
+                handleDisplay(checkbox);
+
+                checkbox.addEventListener('change', (event) => {
+                    handleDisplay(event.target);
+                });
+            });
+
+            function handleDisplay(checkbox) {
+                const row = checkbox.closest('tr');
+                if (!row) return;
+
+                const attachmentCell = row.querySelector('.attachment-cell');
+                const actionCell = row.querySelector('.action-cell');
+                
+                // Get header elements for "Attachment" and "Action"
+                const attachmentHeader = document.querySelector('.attachment-header');
+                const actionHeader = document.querySelector('.action-header');
+                
+                if (checkbox.checked) {
+                    if (attachmentCell) attachmentCell.style.display = 'none';
+                    if (actionCell) actionCell.style.display = 'none';
+                } else {
+                    // Revert to default display style
+                    if (attachmentCell) attachmentCell.style.display = ''; 
+                    if (actionCell) actionCell.style.display = '';
+                }
+
+                // Check if all hard-copy checkboxes in the current tab's table are checked
+                const currentTable = checkbox.closest('table');
+                if (!currentTable) return;
+                const allHardCopiesChecked = Array.from(currentTable.querySelectorAll('input[data-delivery-type="hard-copy"]')).every(cb => cb.checked);
+
+                if (allHardCopiesChecked) {
+                    if (attachmentHeader) attachmentHeader.style.display = 'none';
+                    if (actionHeader) actionHeader.style.display = 'none';
+                } else {
+                    if (attachmentHeader) attachmentHeader.style.display = '';
+                    if (actionHeader) actionHeader.style.display = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #fff;
+        }
+        .content-container {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar {
+             background-color: #21212c;
+            width: 280px;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #061fff;
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 50;
+            top: 0;
+            left: 0;
+        }
+        .active {
+  background-color: white;
+  color: #1e40af; /* Tailwind's blue-800 */
+  font-weight: 600;
+  
+}
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        @media (min-width: 1025px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .patient-card {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+        .patient-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .patient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            border-radius: 9999px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex flex-col min-h-screen lg:flex-row main-container">
+        <!-- Top Navigation -->
+        <div class="w-full bg-white shadow-md p-4 flex justify-between items-center z-10 lg:hidden">
+            <button id="menu-toggle" class="text-white focus:outline-none">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <!-- <h1 class="text-xl font-bold text-white">Appointment Schedule</h1> -->
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-bell text-white"></i>
+                <i class="fas fa-user-circle text-white text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center mb-10">
+                <img src="https://placehold.co/40x40/5c6ac4/fff?text=R" alt="Logo" class="rounded-full mr-3">
+                <h2 class="text-lg font-bold text-white">ReliableDrs.</h2>
+            </div>
+            
+
+            <nav>
+                <ul>
+                  
+             <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-tachometer-alt mr-4 text-lg"></i>
+                           Admin dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-user-md mr-4 text-lg"></i>
+                            Doctor dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <details open>
+                            <summary class="flex items-center text-blue-300 hover:bg-blue-100 bg-blue-50 text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Appointments
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="consulation.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Attend</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Requests</a></li>
+                                <li><a href="scheduled.html" class="block text-blue hover:text-blue-800 p-2 rounded-lg active">Schedule</a></li>
+                                <li><a href="checkin.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Checkin</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Checkout</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-notes-medical mr-4 text-lg"></i>
+                                Adhoc Appointment
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details >
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Pediatric
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="profile.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Profiles</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">update medical records</a></li>
+                               
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-file-prescription mr-4 text-lg"></i>
+                                Prescription Templates
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-cog mr-4 text-lg"></i>
+                                Services
+                            </summary>
+                        </details>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto pt-6 text-sm text-gray-400">
+                2025 ©ReliableDrs Inc. All Rights Reserved.
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="lg:ml-64 flex-1 pt-0">
+            <!-- Header for desktop view -->
+            <header class="bg-white p-6 shadow-md rounded-b-lg flex justify-between items-center border-b border-gray-200 hidden lg:flex">
+                <h1 class="text-xl font-bold text-gray-800">APPOINTMENT SCHEDULE</h1>
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-bell text-gray-600 text-lg"></i>
+                    <i class="fas fa-comment-dots text-gray-600 text-lg"></i>
+                    <span class="text-gray-700 font-medium">Santhosh S</span>
+                    <i class="fas fa-caret-down text-gray-500"></i>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <!-- Search Section -->
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h2 class="text-sm font-semibold text-gray-600 mb-4">SEARCH BY PATIENT DETAILS</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <input type="text" placeholder="Patient Name" class="border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" placeholder="Mobile No" class="border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" placeholder="Location" class="border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <h2 class="text-sm font-semibold text-gray-600 mb-4">OR</h2>
+                    <h2 class="text-sm font-semibold text-gray-600 mb-4">SEARCH BY APPOINTMENTS DATES</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <input type="date" placeholder="From Date" class="border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                        <input type="date" placeholder="To Date" class="border rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="flex space-x-4 mt-6">
+                        <button class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition">FIND PATIENT</button>
+                        <button class="bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Patient Profiles Grid -->
+                <div id="patient-profiles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Patient cards will be dynamically generated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Sample patient data as an array of objects
+        const patients = [
+            { name: "John Doe", patientId: 2022, dob: "01/15/1990", gender: "Male", city: "New York", contact: "1234567890", iconColor: "bg-blue-500" },
+            { name: "Jane Smith", patientId: 2021, dob: "05/20/1985", gender: "Female", city: "Los Angeles", contact: "0987654321", iconColor: "bg-pink-500" },
+            { name: "Robert Johnson", patientId: 2020, dob: "11/03/1972", gender: "Male", city: "Chicago", contact: "1122334455", iconColor: "bg-green-500" },
+            { name: "Emily Davis", patientId: 2019, dob: "07/28/2001", gender: "Female", city: "Houston", contact: "2233445566", iconColor: "bg-purple-500" },
+            { name: "Michael Brown", patientId: 2018, dob: "03/10/1995", gender: "Male", city: "Phoenix", contact: "3344556677", iconColor: "bg-yellow-500" },
+            { name: "Sarah Wilson", patientId: 2017, dob: "09/12/1988", gender: "Female", city: "Philadelphia", contact: "4455667788", iconColor: "bg-red-500" }
+        ];
+
+        // Function to create and append a patient card
+        function createPatientCard(patient) {
+            const card = document.createElement('div');
+            card.className = "patient-card bg-white p-6 rounded-lg flex flex-col items-center text-center";
+
+            // Get initials for profile icon
+            const initials = patient.name.split(' ').map(n => n[0]).join('');
+
+            card.innerHTML = `
+                <div class="profile-icon ${patient.iconColor}">${initials}</div>
+                <div class="mt-4 text-left w-full space-y-2 text-sm text-gray-600">
+                    <p><b>Name:</b> ${patient.name}</p>
+                    <p><b>Patient ID:</b> ${patient.patientId}</p>
+                    <p><b>DOB:</b> ${patient.dob}</p>
+                    <p><b>Gender:</b> ${patient.gender}</p>
+                    <p><b>City:</b> ${patient.city}</p>
+                    <p><b>Contact:</b> ${patient.contact}</p>
+                </div>
+                <button class="w-full mt-6 bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">SELECT PATIENT</button>
+            `;
+            return card;
+        }
+
+        // Get the container and render the cards
+        const patientProfilesContainer = document.getElementById('patient-profiles');
+        patients.forEach(patient => {
+            const card = createPatientCard(patient);
+            patientProfilesContainer.appendChild(card);
+        });
+    </script>
+</body>
+</html>

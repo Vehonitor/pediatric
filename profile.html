@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile & Account Creation</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        /* Base styles for the form card */
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            /* margin-bottom: 2rem; */
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Card for the 'Create Account' section with a distinct background */
+        .account-card {
+            background-color: #f0faff;
+        }
+
+        /* New header style with a solid blue background */
+        .section-header-blue {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            background-color: #0066cc;
+            /* A strong, professional blue */
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin: -2.5rem -2.5rem 2rem;
+            /* Pull into the card's padding */
+            color: white;
+        }
+
+        .section-header-blue h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Styles for input fields to ensure consistency and focus states */
+        .form-input,
+        .form-select,
+        .form-textarea {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Error state styling for inputs */
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+            border-color: #ef4444;
+            /* red-500 */
+        }
+
+        /* Custom styles for the image upload component */
+        .avatar-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 2px solid #d1d5db;
+            position: relative;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-button {
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-button:hover {
+            background-color: #0a58ca;
+        }
+
+        /* Styles for the custom message box */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            /* Prevents the box from blocking clicks */
+        }
+
+        #messageBox.show {
+            opacity: 1;
+        }
+
+        #messageBox.error {
+            background-color: #f44336;
+        }
+
+        /* Custom class for required field labels with asterisk */
+        .required-label::after {
+            content: '*';
+            color: #ef4444;
+            /* red-500 */
+            margin-left: 0.25rem;
+        }
+
+        /* Styling for inline error messages */
+        .error-message {
+            color: #ef4444;
+            /* red-500 */
+            font-size: 0.875rem;
+            /* text-sm */
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        /* Fade-in transition for the guardian container */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+          /* Use the Inter font for a modern feel */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+     .sidebar {
+             background-color: #21212c;
+            width: 280px;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #061fff;
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 50;
+            top: 0;
+            left: 0;
+        }
+        .active {
+  background-color: white;
+  color: #1e40af; /* Tailwind's blue-800 */
+  font-weight: 600;
+  
+}
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        @media (min-width: 1025px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+
+        /* Styling for main content area to clear the sidebar */
+        .main-content {
+            margin-left: 250px;
+            /* Offset for the fixed sidebar */
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+           
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+      
+        
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex">
+       
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center mb-10">
+                <img src="https://placehold.co/40x40/5c6ac4/fff?text=R" alt="Logo" class="rounded-full mr-3">
+                <h2 class="text-lg font-bold text-white">ReliableDrs.</h2>
+            </div>
+            
+
+            <nav>
+                <ul>
+                  
+             <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-tachometer-alt mr-4 text-lg"></i>
+                           Admin dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 hover:text-blue-800 p-3 rounded-lg font-medium">
+                            <i class="fas fa-user-md mr-4 text-lg"></i>
+                            Doctor dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <details >
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 hover:text-blue-800 p-3 rounded-lg font-medium">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Appointments
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="consulation.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Attend</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Requests</a></li>
+                                <li><a href="scheduled.html" class="block text-white hover:text-blue-800 p-2 rounded-lg ">Schedule</a></li>
+                                <li><a href="checkin.html" class="block text-white hover:text-blue-800 p-2 rounded-lg">Checkin</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">Checkout</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-notes-medical mr-4 text-lg"></i>
+                                Adhoc Appointment
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details open>
+                            <summary class="flex items-center text-blue-300 hover:bg-blue-100 bg-blue-50 text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-clipboard-list mr-4 text-lg"></i>
+                                Pediatric
+                            </summary>
+                            <ul class="ml-8 mt-2 space-y-2">
+                                <li><a href="profile.html" class="block text-blue hover:text-blue-800 p-2 rounded-lg active">Profiles</a></li>
+                                <li><a href="#" class="block text-white hover:text-blue-800 p-2 rounded-lg">update medical records</a></li>
+                               
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-file-prescription mr-4 text-lg"></i>
+                                Prescription Templates
+                            </summary>
+                        </details>
+                    </li>
+                    <li class="mb-4">
+                        <details>
+                            <summary class="flex items-center text-white hover:bg-gray-200 hover:text-blue-800 p-3 rounded-lg font-medium cursor-pointer">
+                                <i class="fas fa-cog mr-4 text-lg"></i>
+                                Services
+                            </summary>
+                        </details>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto pt-6 text-sm text-gray-400">
+                2025 ©ReliableDrs Inc. All Rights Reserved.
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="md:ml-32 flex-1 p-3 lg:p-1">
+            <div class="flex flex-col items-center ">
+
+                <!-- The main form container -->
+                <form id="patientProfileForm" class=" max-w-4xl space-y-8">
+
+
+                    <!-- Personal Information Section -->
+                    <section class="form-card">
+                        <div class="section-header-blue">
+                            <!-- Icon for Personal Information -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-8 0h8" />
+                            </svg>
+                            <h2>Personal Information</h2>
+                        </div>
+                        <!-- New Image Upload Design -->
+                        <div class="avatar-upload-container">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <label for="avatarUpload" class="upload-button">Upload Photo</label>
+                            <input type="file" id="avatarUpload" class="hidden" accept="image/*">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="form-group">
+                                <label for="patientFirstName" class="text-sm text-gray-600 mb-1 required-label">First
+                                    Name</label>
+                                <input type="text" id="patientFirstName" class="form-input" required
+                                    placeholder="e.g., John">
+                                <span id="patientFirstNameError" class="error-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientLastName" class="text-sm text-gray-600 mb-1 required-label">Last
+                                    Name</label>
+                                <input type="text" id="patientLastName" class="form-input" required
+                                    placeholder="e.g., Doe">
+                                <span id="patientLastNameError" class="error-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="dob" class="text-sm text-gray-600 mb-1 required-label">Date of Birth</label>
+                                <input type="date" id="dob" class="form-input" required>
+                                <span id="dobError" class="error-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="guardian1Email" class="text-sm text-gray-600 mb-1">Email</label>
+                                <input type="email" id="guardian1Email" class="form-input"
+                                    placeholder="e.g., jane@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="guardian1Phone" class="text-sm text-gray-600 mb-1">Phone Number</label>
+                                <input type="tel" id="guardian1Phone" class="form-input"
+                                    placeholder="e.g., +1 (555) 987-6543">
+                            </div>
+                            <div class="form-group">
+                                <label for="gender" class="text-sm text-gray-600 mb-1 required-label">Gender</label>
+                                <select id="gender" class="form-select" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <span id="genderError" class="error-message"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="bloodType" class="text-sm text-gray-600 mb-1">Blood Type</label>
+                                <select id="bloodType" class="form-select">
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientAddress1" class="text-sm text-gray-600 mb-1 ">Address
+                                    1</label>
+                                <input type="text" id="patientAddress1" class="form-input"
+                                    placeholder="e.g., 123 Main St">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientAddress2" class="text-sm text-gray-600 mb-1">Address 2</label>
+                                <input type="text" id="patientAddress2" class="form-input" placeholder="e.g., Apt 4B">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientCity" class="text-sm text-gray-600 mb-1 ">City</label>
+                                <input type="text" id="patientCity" class="form-input" placeholder="e.g., New York">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientState" class="text-sm text-gray-600 mb-1 ">State</label>
+                                <input type="text" id="patientState" class="form-input" required placeholder="e.g., NY">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientZip" class="text-sm text-gray-600 mb-1 ">ZIP
+                                    Code</label>
+                                <input type="text" id="patientZip" class="form-input" required
+                                    placeholder="e.g., 12345">
+                                <span id="patientZipError" class="error-message"></span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Minor Checkbox and Parent/Guardian Section -->
+                    <section class="form-card">
+                        <div class="section-header-blue flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <!-- Icon for Guardian Information -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <h2>Guardian Information</h2>
+                            </div>
+                            <div class="flex items-center">
+                                <label for="isMinorCheckbox"
+                                    class="text-lg font-medium text-white cursor-pointer mr-2">Is the patient a
+                                    minor?</label>
+                                <input type="checkbox" id="isMinorCheckbox"
+                                    class="h-5 w-5 text-blue-300 rounded-md border-gray-300 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div id="guardianFormsContainer" class="hidden">
+                            <!-- Parent 1 / Guardian 1 Section -->
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Parent 1 / Guardian 1 Details
+                                (Optional)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                <div class="form-group">
+                                    <label for="guardian1Name" class="text-sm text-gray-600 mb-1">Full Name</label>
+                                    <input type="text" id="guardian1Name" class="form-input"
+                                        placeholder="e.g., Jane Doe" disabled>
+                                    <span id="guardian1NameError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Relationship"
+                                        class="text-sm text-gray-600 mb-1">Relationship</label>
+                                    <select id="guardian1Relationship" class="form-select" disabled>
+                                        <option value="">Select Relationship</option>
+                                        <option value="mother">Mother</option>
+                                        <option value="father">Father</option>
+                                        <option value="guardian">Legal Guardian</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <span id="guardian1RelationshipError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Email" class="text-sm text-gray-600 mb-1">Email</label>
+                                    <input type="email" id="guardian1Email" class="form-input"
+                                        placeholder="e.g., jane@example.com" disabled>
+                                    <span id="guardian1EmailError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Phone" class="text-sm text-gray-600 mb-1">Phone Number</label>
+                                    <input type="tel" id="guardian1Phone" class="form-input"
+                                        placeholder="e.g., +1 (555) 987-6543" disabled>
+                                    <span id="guardian1PhoneError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Address1" class="text-sm text-gray-600 mb-1">Address Line
+                                        1</label>
+                                    <input type="text" id="guardian1Address1" class="form-input"
+                                        placeholder="e.g., 123 Oak St" disabled>
+                                    <span id="guardian1Address1Error" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Address2" class="text-sm text-gray-600 mb-1">Address Line
+                                        2</label>
+                                    <input type="text" id="guardian1Address2" class="form-input"
+                                        placeholder="e.g., Apt 5A" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1City" class="text-sm text-gray-600 mb-1">City</label>
+                                    <input type="text" id="guardian1City" class="form-input" placeholder="e.g., Anytown"
+                                        disabled>
+                                    <span id="guardian1CityError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1State" class="text-sm text-gray-600 mb-1">State</label>
+                                    <input type="text" id="guardian1State" class="form-input" placeholder="e.g., CA"
+                                        disabled>
+                                    <span id="guardian1StateError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian1Zip" class="text-sm text-gray-600 mb-1">ZIP Code</label>
+                                    <input type="text" id="guardian1Zip" class="form-input" placeholder="e.g., 67890"
+                                        disabled>
+                                    <span id="guardian1ZipError" class="error-message"></span>
+                                </div>
+                            </div>
+
+                            <!-- Parent 2 / Guardian 2 Section -->
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Parent 2 / Guardian 2 Details
+                                (Optional)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="form-group">
+                                    <label for="guardian2Name" class="text-sm text-gray-600 mb-1">Full Name</label>
+                                    <input type="text" id="guardian2Name" class="form-input" placeholder="e.g., Jim Doe"
+                                        disabled>
+                                    <span id="guardian2NameError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Relationship"
+                                        class="text-sm text-gray-600 mb-1">Relationship</label>
+                                    <select id="guardian2Relationship" class="form-select" disabled>
+                                        <option value="">Select Relationship</option>
+                                        <option value="mother">Mother</option>
+                                        <option value="father">Father</option>
+                                        <option value="guardian">Legal Guardian</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <span id="guardian2RelationshipError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Email" class="text-sm text-gray-600 mb-1">Email</label>
+                                    <input type="email" id="guardian2Email" class="form-input"
+                                        placeholder="e.g., jim@example.com" disabled>
+                                    <span id="guardian2EmailError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Phone" class="text-sm text-gray-600 mb-1">Phone Number</label>
+                                    <input type="tel" id="guardian2Phone" class="form-input"
+                                        placeholder="e.g., +1 (555) 111-2222" disabled>
+                                    <span id="guardian2PhoneError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Address1" class="text-sm text-gray-600 mb-1">Address Line
+                                        1</label>
+                                    <input type="text" id="guardian2Address1" class="form-input"
+                                        placeholder="e.g., 456 Pine Ave" disabled>
+                                    <span id="guardian2Address1Error" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Address2" class="text-sm text-gray-600 mb-1">Address Line
+                                        2</label>
+                                    <input type="text" id="guardian2Address2" class="form-input"
+                                        placeholder="e.g., Suite 2B" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2City" class="text-sm text-gray-600 mb-1">City</label>
+                                    <input type="text" id="guardian2City" class="form-input" placeholder="e.g., My City"
+                                        disabled>
+                                    <span id="guardian2CityError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2State" class="text-sm text-gray-600 mb-1">State</label>
+                                    <input type="text" id="guardian2State" class="form-input" placeholder="e.g., CA"
+                                        disabled>
+                                    <span id="guardian2StateError" class="error-message"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guardian2Zip" class="text-sm text-gray-600 mb-1">ZIP Code</label>
+                                    <input type="text" id="guardian2Zip" class="form-input" placeholder="e.g., 10111"
+                                        disabled>
+                                    <span id="guardian2ZipError" class="error-message"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Account Creation Section -->
+                    <section class="form-card" id="accountSection">
+                        <!-- Updated Header with Checkbox -->
+                        <div class="section-header-blue flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <!-- Icon for Create Online Account -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M10 20v-2a4 4 0 014 0v2M12 10c-3.14 0-5 2.522-5 5h10c0-2.478-1.86-5-5-5z" />
+                                </svg>
+                                <h2>Create Online Account</h2>
+                            </div>
+                            <!-- New Checkbox for Account Section -->
+                            <div class="flex items-center">
+                                <label for="createAccountCheckbox"
+                                    class="text-lg font-medium text-white cursor-pointer mr-2">Create
+                                    an account?</label>
+                                <input type="checkbox" id="createAccountCheckbox"
+                                    class="h-5 w-5 text-blue-300 rounded-md border-gray-300 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Account fields, now controlled by the checkbox -->
+                        <div id="accountFormsContainer" class="hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <!-- Email field, used for account login -->
+                                <div class="form-group">
+                                    <label for="accountEmail" class="text-sm text-gray-600 mb-1">Email</label>
+                                    <input type="email" id="accountEmail" class="form-input"
+                                        placeholder="e.g., patient@example.com" disabled>
+                                    <span id="accountEmailError" class="error-message"></span>
+                                </div>
+                                <!-- Password field with type="password" to obscure input -->
+                                <div class="form-group">
+                                    <label for="accountPassword" class="text-sm text-gray-600 mb-1">Password</label>
+                                    <input type="password" id="accountPassword" class="form-input" minlength="8"
+                                        placeholder="Enter a secure password (min. 8 characters)" disabled>
+                                    <span id="accountPasswordError" class="error-message"></span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                                <div class="form-group">
+                                    <label for="accountContactNumber" class="text-sm text-gray-600 mb-1">Contact
+                                        Number</label>
+                                    <input type="tel" id="accountContactNumber" class="form-input"
+                                        placeholder="e.g., +1 (555) 123-4567" disabled>
+                                    <span id="accountContactNumberError" class="error-message"></span>
+                                </div>
+                                <!-- OTP field and generate button -->
+                                <div class="form-group">
+                                    <label for="otp" class="text-sm text-gray-600 mb-1">One-Time Password (OTP)</label>
+                                    <input type="text" id="otp" class="form-input" placeholder="Enter OTP" disabled>
+                                </div>
+                                <!-- OTP buttons with custom styling -->
+                                <div class="flex space-x-4">
+                                    <button type="button" id="generateOtpBtn"
+                                        class="w-1/2 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+                                        disabled>
+                                        Generate OTP
+                                    </button>
+                                    <button type="button" id="verifyOtpBtn"
+                                        class="w-1/2 bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition-colors"
+                                        disabled>
+                                        Verify OTP
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Submit Button -->
+                    <div class="mt-8 text-center">
+                        <button type="submit" id="submitBtn"
+                            class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                            Submit Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom message box for success/error messages -->
+    <div id="messageBox" class="rounded-lg shadow-lg hidden"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('patientProfileForm');
+            const isMinorCheckbox = document.getElementById('isMinorCheckbox');
+            // const guardianFormsContainer = document.getElementById('guardianFormsContainer');
+            const createAccountCheckbox = document.getElementById('createAccountCheckbox');
+            const accountFormsContainer = document.getElementById('accountFormsContainer');
+            const avatarUploadInput = document.getElementById('avatarUpload');
+            const avatarPreview = document.getElementById('avatarPreview');
+            const generateOtpBtn = document.getElementById('generateOtpBtn');
+            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+            const otpInput = document.getElementById('otp');
+            const messageBox = document.getElementById('messageBox');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // A simple variable to hold the generated OTP for this demo
+            let generatedOtp = '';
+
+            // Function to display a custom message box
+            const showMessage = (message, isError = false) => {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'error', 'show');
+                if (isError) {
+                    messageBox.classList.add('error');
+                }
+                setTimeout(() => {
+                    messageBox.classList.add('show');
+                }, 10); // A slight delay to trigger the CSS transition
+
+                // Hide the message after 3 seconds
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                    setTimeout(() => {
+                        messageBox.classList.add('hidden');
+                    }, 500); // Wait for the transition to finish before hiding
+                }, 3000);
+            };
+
+            // Function to validate a single field and display an inline error
+            const validateField = (field) => {
+                const fieldId = field.id;
+                const errorElement = document.getElementById(`${fieldId}Error`);
+                const label = document.querySelector(`label[for="${fieldId}"]`);
+
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    field.classList.add('error');
+                    if (label) label.classList.add('text-red-500');
+                    if (errorElement) {
+                        errorElement.textContent = 'This field is required.';
+                        errorElement.classList.add('active');
+                    }
+                    return false;
+                } else {
+                    field.classList.remove('error');
+                    if (label) label.classList.remove('text-red-500');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                        errorElement.classList.remove('active');
+                    }
+                    return true;
+                }
+            };
+
+            // Function to toggle visibility of the account creation forms
+            const toggleAccountForms = () => {
+                const accountInputs = accountFormsContainer.querySelectorAll('input, select, button');
+                const accountFieldsToValidate = ['accountEmail', 'accountPassword', 'accountContactNumber'];
+
+                if (createAccountCheckbox.checked) {
+                    accountFormsContainer.classList.remove('hidden');
+                    accountFormsContainer.classList.add('fade-in');
+                    accountInputs.forEach(input => {
+                        input.disabled = false;
+                        if (accountFieldsToValidate.includes(input.id)) {
+                            input.setAttribute('required', 'true');
+                            const label = document.querySelector(`label[for="${input.id}"]`);
+                            if (label) {
+                                label.classList.add('required-label');
+                            }
+                            input.addEventListener('blur', () => validateField(input));
+                        }
+                    });
+                } else {
+                    accountFormsContainer.classList.add('hidden');
+                    accountFormsContainer.classList.remove('fade-in');
+                    accountInputs.forEach(input => {
+                        input.disabled = true;
+                        input.removeAttribute('required');
+                        // Reset validation state
+                        const errorElement = document.getElementById(`${input.id}Error`);
+                        const label = document.querySelector(`label[for="${input.id}"]`);
+                        if (input.classList.contains('error')) {
+                            input.classList.remove('error');
+                        }
+                        if (label && label.classList.contains('required-label')) {
+                            label.classList.remove('required-label');
+                        }
+                        if (errorElement && errorElement.classList.contains('active')) {
+                            errorElement.classList.remove('active');
+                        }
+                    });
+                }
+            };
+
+
+            // Function to toggle visibility of guardian forms and enable/disable fields
+            const toggleGuardianForms = () => {
+                const guardianInputs = guardianFormsContainer.querySelectorAll('input, select');
+                // const guardianFieldsToValidate = ['guardian1Name', 'guardian1Relationship', 'guardian1Email', 'guardian1Phone', 'guardian1Address1', 'guardian1City', 'guardian1State', 'guardian1Zip', 'guardian2Name', 'guardian2Relationship', 'guardian2Email', 'guardian2Phone', 'guardian2Address1', 'guardian2City', 'guardian2State', 'guardian2Zip'];
+
+                if (isMinorCheckbox.checked) {
+                    guardianFormsContainer.classList.remove('hidden');
+                    guardianFormsContainer.classList.add('fade-in');
+                    guardianInputs.forEach(input => {
+                        input.disabled = false;
+                        // if (guardianFieldsToValidate.includes(input.id)) {
+                        //     input.setAttribute('required', 'true');
+                        //     const label = document.querySelector(`label[for="${input.id}"]`);
+                        //     if (label) {
+                        //         label.classList.add('required-label');
+                        //     }
+                        //     input.addEventListener('blur', () => validateField(input));
+                        // }
+                    });
+                } else {
+                    guardianFormsContainer.classList.add('hidden');
+                    guardianFormsContainer.classList.remove('fade-in');
+                    guardianInputs.forEach(input => {
+                        input.disabled = true;
+                        input.removeAttribute('required');
+                        // Reset validation state
+                        const errorElement = document.getElementById(`${input.id}Error`);
+                        const label = document.querySelector(`label[for="${input.id}"]`);
+                        if (input.classList.contains('error')) {
+                            input.classList.remove('error');
+                        }
+                        if (label && label.classList.contains('required-label')) {
+                            label.classList.remove('required-label');
+                        }
+                        if (errorElement && errorElement.classList.contains('active')) {
+                            errorElement.classList.remove('active');
+                        }
+                    });
+                }
+            };
+
+            // Function to handle the image upload preview
+            const handleImageUpload = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        // Added onerror to handle potential image load failures
+                        img.onerror = () => {
+                            showMessage('Failed to load image. Please try another file.', true);
+                            avatarPreview.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            `;
+                        };
+                        avatarPreview.innerHTML = ''; // Clear previous content
+                        avatarPreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Function to generate and "send" an OTP
+            const generateOtp = () => {
+                const contactNumber = document.getElementById('accountContactNumber').value;
+                if (!contactNumber) {
+                    showMessage('Please enter your contact number first.', true);
+                    return;
+                }
+                const min = 100000;
+                const max = 999999;
+                generatedOtp = Math.floor(Math.random() * (max - min + 1)) + min;
+                console.log(`Simulated OTP: ${generatedOtp}`); // Log to console for user to see
+                showMessage(`A 6-digit OTP has been sent. (Check the browser console for the demo OTP)`);
+            };
+
+            // Function to verify the entered OTP
+            const verifyOtp = () => {
+                const enteredOtp = otpInput.value;
+                if (!enteredOtp) {
+                    showMessage('Please enter the OTP.', true);
+                    return;
+                }
+
+                if (enteredOtp == generatedOtp) {
+                    showMessage('OTP verified successfully!');
+                } else {
+                    showMessage('Invalid OTP. Please try again.', true);
+                }
+            };
+
+            // Handle form submission
+            const handleSubmit = (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                let allValid = true;
+                const requiredFields = form.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    const fieldValid = validateField(field);
+                    if (!fieldValid) {
+                        allValid = false;
+                    }
+                });
+
+                // Conditional validation for account and guardian fields
+                if (createAccountCheckbox.checked) {
+                    const accountFields = accountFormsContainer.querySelectorAll('[required]');
+                    accountFields.forEach(field => {
+                        const fieldValid = validateField(field);
+                        if (!fieldValid) {
+                            allValid = false;
+                        }
+                    });
+                }
+
+                if (isMinorCheckbox.checked) {
+                    const guardianFields = guardianFormsContainer.querySelectorAll('[required]');
+                    guardianFields.forEach(field => {
+                        const fieldValid = validateField(field);
+                        if (!fieldValid) {
+                            allValid = false;
+                        }
+                    });
+                }
+
+                if (!allValid) {
+                    showMessage('Please fill out all required fields.', true);
+                    return;
+                }
+
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+
+                // Simulate form submission process
+                setTimeout(() => {
+                    submitBtn.textContent = 'Submit Profile';
+                    submitBtn.disabled = false;
+                    showMessage('Profile submitted successfully!', false);
+                    form.reset(); // Clear the form
+                    // Reset the toggles and form state
+                    createAccountCheckbox.checked = false;
+                    isMinorCheckbox.checked = false;
+                    toggleAccountForms();
+                    toggleGuardianForms();
+                }, 2000);
+            };
+
+            // Add real-time validation to all existing required fields
+            const requiredFields = document.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                field.addEventListener('blur', () => {
+                    validateField(field);
+                });
+            });
+
+            // Event listeners
+            createAccountCheckbox.addEventListener('change', toggleAccountForms);
+            isMinorCheckbox.addEventListener('change', toggleGuardianForms);
+            avatarUploadInput.addEventListener('change', handleImageUpload);
+            generateOtpBtn.addEventListener('click', generateOtp);
+            verifyOtpBtn.addEventListener('click', verifyOtp);
+            form.addEventListener('submit', handleSubmit);
+
+
+            // Initial state on page load
+            toggleAccountForms();
+            toggleGuardianForms();
+        });
+    </script>
+</body>
+
+</html>
